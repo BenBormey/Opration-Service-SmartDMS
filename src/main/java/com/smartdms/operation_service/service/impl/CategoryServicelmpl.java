@@ -2,24 +2,22 @@ package com.smartdms.operation_service.service.impl;
 
 import com.smartdms.operation_service.dto.Category.CategoryRequest;
 import com.smartdms.operation_service.dto.Category.CategoryResponse;
-import com.smartdms.operation_service.entity.Supplier;
 import com.smartdms.operation_service.entity.categories;
 import com.smartdms.operation_service.exception.ResourceNotFoundException;
 import com.smartdms.operation_service.repository.CategoryRepository;
 import com.smartdms.operation_service.service.CategoryService;
-import jdk.jfr.Category;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
 public class CategoryServicelmpl implements CategoryService {
 
-    private  final CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
     public CategoryServicelmpl(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
     }
-
 
     @Override
     public CategoryResponse create(CategoryRequest request) {
@@ -28,7 +26,7 @@ public class CategoryServicelmpl implements CategoryService {
 
         category.setCategoryName(request.getCategoryName());
         category.setDescription(request.getDescription());
-        category.setIsActive(request.getIsActive());
+        category.setIsDeleted(false);
 
         categories saved = categoryRepository.save(category);
 
@@ -36,7 +34,6 @@ public class CategoryServicelmpl implements CategoryService {
                 .id(saved.getId())
                 .categoryName(saved.getCategoryName())
                 .description(saved.getDescription())
-                .isActive(saved.getIsActive())
                 .build();
     }
 
@@ -45,54 +42,44 @@ public class CategoryServicelmpl implements CategoryService {
 
         categories category = categoryRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Category not found with id: " + id));
+                        new ResourceNotFoundException(
+                                "Category not found with id: " + id));
 
-        CategoryResponse response = new CategoryResponse();
-        response.setId(category.getId());
-        response.setCategoryName(category.getCategoryName());
-        response.setDescription(category.getDescription());
-        response.setIsActive(category.getIsActive());
-
-        return response;
+        return CategoryResponse.builder()
+                .id(category.getId())
+                .categoryName(category.getCategoryName())
+                .description(category.getDescription())
+                .build();
     }
 
     @Override
     public List<CategoryResponse> getAll() {
 
-        List<categories> categories = categoryRepository.findAll();
+        List<categories> categoriesList = categoryRepository.findAll();
 
-        if (categories.isEmpty()) {
+        if (categoriesList.isEmpty()) {
             throw new ResourceNotFoundException("Category not found");
         }
 
-        return categories.stream()
-                .map(category -> CategoryResponse.builder()
-                        .id(category.getId())
-                        .categoryName(category.getCategoryName())
-                        .description(category.getDescription())
-                        .isActive(category.getIsActive())
-                        .build())
+        return categoriesList.stream()
+                .map(this::toResponse)
                 .toList();
     }
+
     @Override
     public CategoryResponse update(Long id, CategoryRequest request) {
 
         categories category = categoryRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Category not found with id: " + id));
+                        new ResourceNotFoundException(
+                                "Category not found with id: " + id));
 
         category.setCategoryName(request.getCategoryName());
         category.setDescription(request.getDescription());
-        category.setIsActive(request.getIsActive());
 
         categories updated = categoryRepository.save(category);
 
-        return CategoryResponse.builder()
-                .id(updated.getId())
-                .categoryName(updated.getCategoryName())
-                .description(updated.getDescription())
-                .isActive(updated.getIsActive())
-                .build();
+        return toResponse(updated);
     }
 
     @Override
@@ -100,8 +87,23 @@ public class CategoryServicelmpl implements CategoryService {
 
         categories category = categoryRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Category not found with id: " + id));
+                        new ResourceNotFoundException(
+                                "Category not found with id: " + id));
 
-        categoryRepository.delete(category);
+        // Soft Delete
+        category.setIsDeleted(true);
+        categoryRepository.save(category);
+
+        // Hard Delete (if needed)
+        // categoryRepository.delete(category);
+    }
+
+    private CategoryResponse toResponse(categories category) {
+
+        return CategoryResponse.builder()
+                .id(category.getId())
+                .categoryName(category.getCategoryName())
+                .description(category.getDescription())
+                .build();
     }
 }

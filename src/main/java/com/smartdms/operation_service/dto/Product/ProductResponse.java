@@ -1,6 +1,5 @@
 package com.smartdms.operation_service.dto.Product;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,15 +22,23 @@ public class ProductResponse {
 
     private Long categoryId;
 
+    private Long supplierId;
+
     private String unit;
 
     private BigDecimal buyingPrice;
 
     private BigDecimal sellingPrice;
 
+    private BigDecimal wholesalePrice;
+
+    private Integer reorderLevel;
+
     private Boolean isActive;
+
+    private Boolean isDeleted;
 
     private LocalDateTime createdAt;
 
-    private Long supplierId;
+    private LocalDateTime updatedAt;
 }

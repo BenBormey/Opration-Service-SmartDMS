@@ -8,7 +8,6 @@ import com.smartdms.operation_service.repository.CustomerRepository;
 import com.smartdms.operation_service.service.CustomerService;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,11 +29,17 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setCustomerName(request.getCustomerName());
         customer.setPhone(request.getPhone());
         customer.setAddress(request.getAddress());
+
+        customer.setLatitude(request.getLatitude());
+        customer.setLongitude(request.getLongitude());
+
         customer.setSalesmanId(request.getSalesmanId());
         customer.setSdId(request.getSdId());
+
         customer.setCreditLimit(request.getCreditLimit());
+        customer.setBalanceDue(request.getBalanceDue());
+
         customer.setIsActive(request.getIsActive());
-        customer.setCreatedAt(LocalDateTime.now());
 
         Customer saved = repository.save(customer);
 
@@ -45,7 +50,9 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerResponse getById(Long id) {
 
         Customer customer = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Customer not found with id: " + id));
 
         return mapToResponse(customer);
     }
@@ -53,8 +60,13 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public List<CustomerResponse> getAll() {
 
-        return repository.findAll()
-                .stream()
+        List<Customer> customers = repository.findAll();
+
+        if (customers.isEmpty()) {
+            throw new ResourceNotFoundException("Customer not found");
+        }
+
+        return customers.stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -63,15 +75,24 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerResponse update(Long id, CustomerRequest request) {
 
         Customer customer = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Customer not found with id: " + id));
 
         customer.setCustomerCode(request.getCustomerCode());
         customer.setCustomerName(request.getCustomerName());
         customer.setPhone(request.getPhone());
         customer.setAddress(request.getAddress());
+
+        customer.setLatitude(request.getLatitude());
+        customer.setLongitude(request.getLongitude());
+
         customer.setSalesmanId(request.getSalesmanId());
         customer.setSdId(request.getSdId());
+
         customer.setCreditLimit(request.getCreditLimit());
+        customer.setBalanceDue(request.getBalanceDue());
+
         customer.setIsActive(request.getIsActive());
 
         Customer updated = repository.save(customer);
@@ -83,7 +104,9 @@ public class CustomerServiceImpl implements CustomerService {
     public void delete(Long id) {
 
         Customer customer = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Customer not found with id: " + id));
 
         repository.delete(customer);
     }
@@ -97,11 +120,21 @@ public class CustomerServiceImpl implements CustomerService {
         response.setCustomerName(customer.getCustomerName());
         response.setPhone(customer.getPhone());
         response.setAddress(customer.getAddress());
+
+        response.setLatitude(customer.getLatitude());
+        response.setLongitude(customer.getLongitude());
+
         response.setSalesmanId(customer.getSalesmanId());
         response.setSdId(customer.getSdId());
+
         response.setCreditLimit(customer.getCreditLimit());
+        response.setBalanceDue(customer.getBalanceDue());
+
         response.setIsActive(customer.getIsActive());
+        response.setIsDeleted(customer.getIsDeleted());
+
         response.setCreatedAt(customer.getCreatedAt());
+        response.setUpdatedAt(customer.getUpdatedAt());
 
         return response;
     }

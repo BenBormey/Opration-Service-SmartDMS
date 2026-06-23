@@ -2,7 +2,7 @@ package com.smartdms.operation_service.service.impl;
 
 import com.smartdms.operation_service.dto.sd.SdRequest;
 import com.smartdms.operation_service.dto.sd.SdResponse;
-import com.smartdms.operation_service.entity.Sd;
+import com.smartdms.operation_service.entity.sub_distributors;
 import com.smartdms.operation_service.exception.ResourceAlreadyExistsException;
 import com.smartdms.operation_service.exception.ResourceNotFoundException;
 import com.smartdms.operation_service.repository.SdRepository;
@@ -27,69 +27,69 @@ public class SdServiceImpl implements SdService {
             throw  new ResourceAlreadyExistsException("SD code already exists");
         }
 
-        Sd sd = new Sd();
-        sd.setSdCode(request.getSdCode());
-        sd.setSdName(request.getSdName());
-        sd.setPhone(request.getPhone());
-        sd.setAddress(request.getAddress());
-        sd.setIsActive(request.getIsActive());
-        sd.setCreatedAt(LocalDateTime.now());
+        sub_distributors subdistributors = new sub_distributors();
+        subdistributors.setSdCode(request.getSdCode());
+        subdistributors.setSdName(request.getSdName());
+        subdistributors.setPhone(request.getPhone());
+        subdistributors.setAddress(request.getAddress());
+        subdistributors.setIsActive(request.getIsActive());
+        subdistributors.setCreatedAt(LocalDateTime.now());
 
-        Sd saved  = repository.save(sd);
+        sub_distributors saved  = repository.save(subdistributors);
         return mapToResponse(saved);
     }
 
     @Override
     public SdResponse getById(Long id) {
-        Sd sd = repository.findById(id)
+        sub_distributors subdistributors = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("SD not found"));
-        return mapToResponse(sd);
+        return mapToResponse(subdistributors);
 
     }
 
     @Override
     public List<SdResponse> getAll() {
-        List<Sd> sds = repository.findAll();
+        List<sub_distributors> subdistributors = repository.findAll();
 
-        return sds.stream()
+        return subdistributors.stream()
                 .map(this::mapToResponse)
                 .toList();
     }
 
     @Override
     public SdResponse update(Long id, SdRequest request) {
-        Sd sd = repository.findById(id)
+        sub_distributors subdistributors = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("SD not found"));
 
-        sd.setSdCode(request.getSdCode());
-        sd.setSdName(request.getSdName());
-        sd.setPhone(request.getPhone());
-        sd.setAddress(request.getAddress());
-        sd.setIsActive(request.getIsActive());
+        subdistributors.setSdCode(request.getSdCode());
+        subdistributors.setSdName(request.getSdName());
+        subdistributors.setPhone(request.getPhone());
+        subdistributors.setAddress(request.getAddress());
+        subdistributors.setIsActive(request.getIsActive());
 
-        Sd updated = repository.save(sd);
+        sub_distributors updated = repository.save(subdistributors);
 
         return mapToResponse(updated);
     }
 
     @Override
     public void delete(Long id) {
-        Sd sd = repository.findById(id)
+        sub_distributors subdistributors = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("SD not found"));
 
-        repository.delete(sd);
+        repository.delete(subdistributors);
     }
-    private SdResponse mapToResponse(Sd sd) {
+    private SdResponse mapToResponse(sub_distributors subdistributors) {
 
         SdResponse response = new SdResponse();
 
-        response.setId(sd.getId());
-        response.setSdCode(sd.getSdCode());
-        response.setSdName(sd.getSdName());
-        response.setPhone(sd.getPhone());
-        response.setAddress(sd.getAddress());
-        response.setIsActive(sd.getIsActive());
-        response.setCreatedAt(sd.getCreatedAt());
+        response.setId(subdistributors.getId());
+        response.setSdCode(subdistributors.getSdCode());
+        response.setSdName(subdistributors.getSdName());
+        response.setPhone(subdistributors.getPhone());
+        response.setAddress(subdistributors.getAddress());
+        response.setIsActive(subdistributors.getIsActive());
+        response.setCreatedAt(subdistributors.getCreatedAt());
 
         return response;
     }

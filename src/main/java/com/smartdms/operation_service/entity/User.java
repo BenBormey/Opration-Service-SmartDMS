@@ -2,9 +2,13 @@ package com.smartdms.operation_service.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
 
 import java.time.LocalDateTime;
-
+@Getter
+@Setter
 @Entity
 @Table(name = "users", schema = "dms")
 @Data
@@ -17,10 +21,10 @@ public class User {
     private String username;
 
     @Column(name = "password_hash")
-    private String passwordHash;   // ⚠ never put this in a Response DTO
+    private String passwordHash;
 
     @Column(name = "full_name")
-    private String fullName;       // ✅ this is the salesman name
+    private String fullName;
 
     private String phone;
 
@@ -35,6 +39,15 @@ public class User {
     @Column(name = "is_active")
     private Boolean isActive;
 
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
+
+    @Column(name = "last_login_at")
+    private LocalDateTime lastLoginAt;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }

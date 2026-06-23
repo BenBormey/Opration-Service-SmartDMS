@@ -23,6 +23,9 @@ public class Product {
     @Column(name = "category_id")
     private Long categoryId;
 
+    @Column(name = "supplier_id")
+    private Long supplierId;
+
     private String unit;
 
     @Column(name = "buying_price")
@@ -31,12 +34,21 @@ public class Product {
     @Column(name = "selling_price")
     private BigDecimal sellingPrice;
 
+    @Column(name = "wholesale_price")
+    private BigDecimal wholesalePrice;
+
+    @Column(name = "reorder_level")
+    private Integer reorderLevel;
+
     @Column(name = "is_active")
     private Boolean isActive;
+
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "supplier_id")
-    private Long supplierId;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }

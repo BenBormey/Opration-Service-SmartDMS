@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class WarehouseStockRequest {
+
     private Long warehouseId;
     private Long productId;
     private Integer qtyOnHand;

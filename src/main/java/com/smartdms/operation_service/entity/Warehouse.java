@@ -18,7 +18,7 @@ public class Warehouse {
     private String warehouseCode;
 
     @Column(name = "warehouse_name")
-    private String warehouseName;        // ✅ ឈ្មោះ​ឃ្លាំង
+    private String warehouseName;
 
     private String address;
 
@@ -27,6 +27,12 @@ public class Warehouse {
     @Column(name = "is_active")
     private Boolean isActive;
 
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }

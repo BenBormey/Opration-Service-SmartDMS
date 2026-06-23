@@ -4,12 +4,14 @@ package com.smartdms.operation_service.service.impl;
 import com.smartdms.operation_service.dto.stock.StockRequest;
 import com.smartdms.operation_service.dto.stock.StockResponse;
 import com.smartdms.operation_service.entity.Product;
-import com.smartdms.operation_service.entity.Sd;
+import com.smartdms.operation_service.entity.User;
+import com.smartdms.operation_service.entity.sub_distributors;
 import com.smartdms.operation_service.entity.Stock;
 import com.smartdms.operation_service.exception.ResourceNotFoundException;
 import com.smartdms.operation_service.repository.ProductRepository;
 import com.smartdms.operation_service.repository.SdRepository;
 import com.smartdms.operation_service.repository.StockRepository;
+import com.smartdms.operation_service.repository.UserRepository;
 import com.smartdms.operation_service.service.StockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +24,7 @@ public class StockServiceImpl implements StockService {
     private final SdRepository sdRepository;
     private final ProductRepository productRepository;
     private final StockRepository repository;
-
+    private  final UserRepository userripository;
     @Override
     public StockResponse create(StockRequest request) {
 
@@ -84,16 +86,16 @@ public class StockServiceImpl implements StockService {
 
     private StockResponse mapToResponse(Stock stock) {
 
-        Sd sd = sdRepository.findById(stock.getSdId())
-                .orElseThrow(() -> new ResourceNotFoundException("SD not found"));
 
+        User user  = userripository.findById(stock.getSdId())
+                .orElseThrow(() -> new ResourceNotFoundException("SD not found"));
         Product product = productRepository.findById(stock.getProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
         return StockResponse.builder()
                 .id(stock.getId())
                 .sdId(stock.getSdId())
-                .sdName(sd.getSdName())
+                .sdName(user.getFullName())
                 .productId(stock.getProductId())
                 .productName(product.getProductName())
                 .qtyOnHand(stock.getQtyOnHand())

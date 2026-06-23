@@ -7,9 +7,9 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "sd", schema = "dms")
+@Table(name = "sub_distributors", schema = "dms")
 @Data
-public class Sd {
+public class sub_distributors {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

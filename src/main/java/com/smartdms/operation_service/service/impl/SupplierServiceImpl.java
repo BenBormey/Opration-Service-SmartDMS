@@ -6,16 +6,14 @@ import com.smartdms.operation_service.exception.ResourceAlreadyExistsException;
 import com.smartdms.operation_service.exception.ResourceNotFoundException;
 import com.smartdms.operation_service.repository.SupplierRepository;
 import com.smartdms.operation_service.service.SupplierService;
-
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+
 @Service
+public class SupplierServiceImpl implements SupplierService {
 
-public class SupplierServiceImpl  implements SupplierService {
-
-    private  final SupplierRepository repository;
+    private final SupplierRepository repository;
 
     public SupplierServiceImpl(SupplierRepository repository) {
         this.repository = repository;
@@ -23,7 +21,8 @@ public class SupplierServiceImpl  implements SupplierService {
 
     @Override
     public List<Supplier> getAll() {
-        List<Supplier> suppliers = repository.findAll();
+
+        List<Supplier> suppliers = repository.findByIsDeletedFalse();
 
         if (suppliers.isEmpty()) {
             throw new ResourceNotFoundException("Supplier not found");
@@ -34,17 +33,18 @@ public class SupplierServiceImpl  implements SupplierService {
 
     @Override
     public Supplier getById(Long id) {
+
         return repository.findById(id)
+                .filter(supplier -> !Boolean.TRUE.equals(supplier.getIsDeleted()))
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Supplier not found"));
+                        new ResourceNotFoundException(
+                                "Supplier not found with Id : " + id));
     }
 
     @Override
     public Supplier create(SupplierRequest request) {
 
-        if (repository.existsBySupplierCode(
-                request.getSupplierCode())) {
-
+        if (repository.existsBySupplierCode(request.getSupplierCode())) {
             throw new ResourceAlreadyExistsException(
                     "Supplier code already exists: " + request.getSupplierCode());
         }
@@ -55,30 +55,34 @@ public class SupplierServiceImpl  implements SupplierService {
                 .phone(request.getPhone())
                 .address(request.getAddress())
                 .isActive(request.getIsActive())
+                .isDeleted(false)
                 .build();
 
         return repository.save(supplier);
     }
 
     @Override
-    public Supplier update(Long id, SupplierRequest supplier) {
+    public Supplier update(Long id, SupplierRequest request) {
+
         Supplier existingSupplier = repository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Supplier not found with Id : "+ id));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Supplier not found with Id : " + id));
 
         if (!existingSupplier.getSupplierCode()
-                .equalsIgnoreCase(supplier.getSupplierCode())
-                && repository.existsBySupplierCode(
-                supplier.getSupplierCode())) {
+                .equalsIgnoreCase(request.getSupplierCode())
+                && repository.existsBySupplierCode(request.getSupplierCode())) {
 
             throw new ResourceAlreadyExistsException(
                     "Supplier code already exists: "
-                            + supplier.getSupplierCode());
+                            + request.getSupplierCode());
         }
-        existingSupplier.setSupplierCode(supplier.getSupplierCode());
-        existingSupplier.setSupplierName(supplier.getSupplierName());
-        existingSupplier.setPhone(supplier.getPhone());
-        existingSupplier.setAddress(supplier.getAddress());
-        existingSupplier.setIsActive(supplier.getIsActive());
+
+        existingSupplier.setSupplierCode(request.getSupplierCode());
+        existingSupplier.setSupplierName(request.getSupplierName());
+        existingSupplier.setPhone(request.getPhone());
+        existingSupplier.setAddress(request.getAddress());
+        existingSupplier.setIsActive(request.getIsActive());
 
         return repository.save(existingSupplier);
     }
@@ -86,5 +90,13 @@ public class SupplierServiceImpl  implements SupplierService {
     @Override
     public void delete(Long id) {
 
+        Supplier supplier = repository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Supplier not found with Id : " + id));
+
+        supplier.setIsDeleted(true);
+
+        repository.save(supplier);
     }
 }

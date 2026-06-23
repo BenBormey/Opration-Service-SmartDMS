@@ -1,7 +1,10 @@
 package com.smartdms.operation_service.entity;
 
+
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "product_categories", schema = "dms")
@@ -17,6 +20,12 @@ public class categories {
 
     private String description;
 
-    @Column(name = "is_active")
-    private Boolean isActive;
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }
