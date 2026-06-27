@@ -14,4 +14,6 @@ public interface RoutePlanRepository extends JpaRepository<RoutePlan, Long> {
     List<RoutePlan> findByDayOfWeek(String dayOfWeek);
 
     List<RoutePlan> findBySalesmanIdAndDayOfWeek(Long salesmanId, String dayOfWeek);
+
+
 }
