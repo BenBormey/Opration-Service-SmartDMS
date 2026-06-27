@@ -16,4 +16,5 @@ public class StockLedgerResponse {
     private Integer qtyOut;
     private Integer balanceQty;
     private LocalDateTime trxDate;
+    private Long warehouseId;
 }

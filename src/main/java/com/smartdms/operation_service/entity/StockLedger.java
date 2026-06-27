@@ -18,7 +18,8 @@ public class StockLedger {
 
     @Column(name = "product_id")
     private Long productId;
-
+    @Column(name = "warehouse_id")
+    private Long warehouseId;
     @Column(name = "trx_type")
     private String trxType;
 

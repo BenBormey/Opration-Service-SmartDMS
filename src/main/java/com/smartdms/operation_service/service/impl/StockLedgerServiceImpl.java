@@ -43,6 +43,7 @@ public class StockLedgerServiceImpl implements StockLedgerService {
                 .qtyIn(request.getQtyIn())
                 .qtyOut(request.getQtyOut())
                 .balanceQty(request.getBalanceQty())
+                .warehouseId(request.getWarehouseId())
                 .trxDate(LocalDateTime.now())     // set automatically
                 .build();
         return toResponse(repository.save(ledger));
@@ -58,6 +59,7 @@ public class StockLedgerServiceImpl implements StockLedgerService {
         ledger.setTrxType(request.getTrxType());
         ledger.setQtyIn(request.getQtyIn());
         ledger.setQtyOut(request.getQtyOut());
+        ledger.setWarehouseId(request.getWarehouseId());
         ledger.setBalanceQty(request.getBalanceQty());
         return toResponse(repository.save(ledger));
     }
@@ -78,6 +80,7 @@ public class StockLedgerServiceImpl implements StockLedgerService {
                 .trxType(l.getTrxType())
                 .qtyIn(l.getQtyIn())
                 .qtyOut(l.getQtyOut())
+                .warehouseId(l.getWarehouseId())
                 .balanceQty(l.getBalanceQty())
                 .trxDate(l.getTrxDate())
                 .build();

@@ -10,4 +10,5 @@ public class StockLedgerRequest {
     private Integer qtyIn;
     private Integer qtyOut;
     private Integer balanceQty;
+    private Long warehouseId;
 }
