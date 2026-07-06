@@ -23,6 +23,7 @@ public class ProductResponse {
     private Long categoryId;
 
     private Long supplierId;
+    private  String supplierName;
 
     private String unit;
 

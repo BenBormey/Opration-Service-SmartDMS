@@ -23,4 +23,5 @@ public class DriverAssignment {
     private LocalDate assignedDate;
 
     private String status;
+    public  Long vehicleId;
 }

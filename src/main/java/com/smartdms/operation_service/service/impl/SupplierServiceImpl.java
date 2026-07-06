@@ -8,6 +8,7 @@ import com.smartdms.operation_service.repository.SupplierRepository;
 import com.smartdms.operation_service.service.SupplierService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -56,6 +57,8 @@ public class SupplierServiceImpl implements SupplierService {
                 .address(request.getAddress())
                 .isActive(request.getIsActive())
                 .isDeleted(false)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
 
         return repository.save(supplier);

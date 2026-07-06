@@ -26,9 +26,10 @@ public class TransferOrderServiceImpl implements ITransferOrderService {
     private static final String CANCELLED = "CANCELLED";
     private static final String TRX_IN  = "IN";
     private static final String TRX_OUT = "OUT";
+
     private final TransferOrderRepository transferOrderRepository;
     private final StockLedgerRepository stockLedgerRepository;
-    private  final WarehouseStockRepository   warehouseStockRepository;
+    private final WarehouseStockRepository warehouseStockRepository;
     private final StockRepository stockRepository;
 
     @Override
@@ -60,6 +61,12 @@ public class TransferOrderServiceImpl implements ITransferOrderService {
         existing.setFromWarehouseId(changes.getFromWarehouseId());
         existing.setToSdId(changes.getToSdId());
         existing.setTransferDate(changes.getTransferDate());
+
+        // 👈 driver fields (only overwrite when provided, so update doesn't wipe them)
+        if (changes.getDriverId() != null)  existing.setDriverId(changes.getDriverId());
+        if (changes.getVehicleId() != null) existing.setVehicleId(changes.getVehicleId());
+        if (changes.getRemark() != null)    existing.setRemark(changes.getRemark());
+
         existing.setUpdatedAt(LocalDateTime.now());
 
         return transferOrderRepository.save(existing);
@@ -87,7 +94,7 @@ public class TransferOrderServiceImpl implements ITransferOrderService {
     @Transactional
     public TransferOrder approve(Long id) {
         TransferOrder order = findById(id);
-        requireStatus(order, REQUEST);            // can only approve a pending order
+        requireStatus(order, REQUEST);
         return changeStatus(order, APPROVED);
     }
 
@@ -100,6 +107,7 @@ public class TransferOrderServiceImpl implements ITransferOrderService {
         for (TransferOrderItem item : order.getTransferOrderItems()) {
             recordOutbound(order, item);
         }
+        order.setStartedAt(LocalDateTime.now());  // 👈 driver started moving stock
         return changeStatus(order, SHIPPED);
     }
 
@@ -112,6 +120,7 @@ public class TransferOrderServiceImpl implements ITransferOrderService {
         for (TransferOrderItem item : order.getTransferOrderItems()) {
             recordInbound(order, item);
         }
+        order.setCompletedAt(LocalDateTime.now()); // 👈 driver finished
         return changeStatus(order, RECEIVED);
     }
 
@@ -176,25 +185,26 @@ public class TransferOrderServiceImpl implements ITransferOrderService {
                 .qtyOut(qty)
                 .balanceQty(prevBalance - qty)
                 .trxDate(LocalDateTime.now())
-                .build());          // <-- គ្មាន .sdId() សោះ
+                .build());
     }
+
     private void recordInbound(TransferOrder order, TransferOrderItem item) {
         int qty = toQty(item.getQty());
 
-        // ១. បន្ថែម​ស្តុក​ចូល SD (stocks) — នេះ​ជា​អ្វី​ដែល​ខ្វះ
+        // 1. add stock into SD (stocks)
         Stock stock = stockRepository
                 .findBySdIdAndProductId(order.getToSdId(), item.getProductId())
-                .orElseGet(() -> Stock.builder()              // បើ​មិន​ទាន់​មាន row → បង្កើត​ថ្មី
+                .orElseGet(() -> Stock.builder()
                         .sdId(order.getToSdId())
                         .productId(item.getProductId())
                         .qtyOnHand(0)
                         .build());
 
         int onHand = stock.getQtyOnHand() == null ? 0 : stock.getQtyOnHand();
-        stock.setQtyOnHand(onHand + qty);                     // បូក​ស្តុក​ចូល
+        stock.setQtyOnHand(onHand + qty);
         stockRepository.save(stock);
 
-        // ២. ledger row (IN) — sd តែ​ប៉ុណ្ណោះ, គ្មាន warehouseId
+        // 2. ledger row (IN) — sd only, no warehouseId
         int prevBalance = stockLedgerRepository
                 .findFirstByProductIdAndSdIdOrderByIdDesc(
                         item.getProductId(), order.getToSdId())
@@ -211,6 +221,7 @@ public class TransferOrderServiceImpl implements ITransferOrderService {
                 .trxDate(LocalDateTime.now())
                 .build());
     }
+
     private int toQty(Double qty) {
         return qty == null ? 0 : qty.intValue();
     }

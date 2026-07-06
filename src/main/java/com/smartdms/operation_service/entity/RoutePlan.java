@@ -3,11 +3,12 @@ package com.smartdms.operation_service.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name = "route_plans")
+@Table(name = "route_plans", schema = "dms")
 @Data
 public class RoutePlan {
 
@@ -15,18 +16,14 @@ public class RoutePlan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "salesman_id", nullable = false)
     private Long salesmanId;
 
-    @Column(name = "plan_date")
-    private LocalDate planDate;
-
-    @Column(name = "description")
     private String description;
 
-    @Column(name = "created_at")
+    private Boolean isActive;
+
     private LocalDateTime createdAt;
 
-    @Column(name = "day_of_week")
-    private String dayOfWeek;
+    @OneToMany(mappedBy = "routePlan", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RoutePlanDetail> details = new ArrayList<>();
 }

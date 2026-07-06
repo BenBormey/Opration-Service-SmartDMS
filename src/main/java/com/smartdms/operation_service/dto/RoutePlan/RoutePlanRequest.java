@@ -1,15 +1,17 @@
 package com.smartdms.operation_service.dto.RoutePlan;
 
-
 import lombok.Data;
 
-import java.time.LocalDate;
+import java.util.List;
 
 @Data
 public class RoutePlanRequest {
 
     private Long salesmanId;
-    private LocalDate planDate;
+
     private String description;
-    private String dayOfWeek;
+
+    private Boolean isActive;
+
+    private List<RoutePlanDetailRequest> details;
 }

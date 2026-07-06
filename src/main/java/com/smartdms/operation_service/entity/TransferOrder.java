@@ -27,20 +27,32 @@ public class TransferOrder {
     @Column(name = "to_sd_id")
     private Long toSdId;
 
+    @Column(name = "driver_id")
+    private Long driverId;
+
+    @Column(name = "vehicle_id")
+    private Long vehicleId;
+
     @Column(name = "transfer_date")
     private LocalDateTime transferDate;
 
     @Column(name = "status")
     private String status;
 
+    @Column(name = "started_at")
+    private LocalDateTime startedAt;
+
+    @Column(name = "completed_at")
+    private LocalDateTime completedAt;
+
+    @Column(name = "remark")
+    private String remark;
+
     @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt =LocalDateTime.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt= LocalDateTime.now();
-
-
-
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
     @OneToMany(
             mappedBy = "transferOrder",

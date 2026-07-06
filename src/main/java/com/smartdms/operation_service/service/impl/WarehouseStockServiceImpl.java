@@ -13,6 +13,7 @@ import com.smartdms.operation_service.service.WarehouseStockService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -68,6 +69,7 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
                 .warehouse(warehouse)
                 .product(product)
                 .qtyOnHand(request.getQtyOnHand())
+                .updatedAt(LocalDateTime.now())
                 .build();
 
         ws = repository.save(ws);

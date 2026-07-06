@@ -8,12 +8,8 @@ import java.util.List;
 
 @Repository
 public interface RoutePlanRepository extends JpaRepository<RoutePlan, Long> {
-
     List<RoutePlan> findBySalesmanId(Long salesmanId);
 
-    List<RoutePlan> findByDayOfWeek(String dayOfWeek);
-
-    List<RoutePlan> findBySalesmanIdAndDayOfWeek(Long salesmanId, String dayOfWeek);
-
-
+    List<RoutePlan> findDistinctByDetailsDayOfWeek(String dayOfWeek);
+    boolean existsBySalesmanId(Long salesmanId);
 }

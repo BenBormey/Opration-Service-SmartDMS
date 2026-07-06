@@ -28,10 +28,19 @@ public class StockServiceImpl implements StockService {
     @Override
     public StockResponse create(StockRequest request) {
 
-        Stock stock = new Stock();
+        User user = userripository.findById(request.getSdId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "SD not found with id: " + request.getSdId()));
 
-        stock.setSdId(request.getSdId());
-        stock.setProductId(request.getProductId());
+        Product product = productRepository.findById(request.getProductId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Product not found with id: " + request.getProductId()));
+
+        Stock stock = new Stock();
+        stock.setSdId(user.getId());
+        stock.setProductId(product.getId());
         stock.setQtyOnHand(request.getQtyOnHand());
 
         Stock saved = repository.save(stock);
@@ -64,6 +73,15 @@ public class StockServiceImpl implements StockService {
         Stock stock = repository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Stock not found with id: " + id));
+        User user = userripository.findById(request.getSdId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "SD not found with id: " + request.getSdId()));
+
+        Product product = productRepository.findById(request.getProductId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Product not found with id: " + request.getProductId()));
 
         stock.setSdId(request.getSdId());
         stock.setProductId(request.getProductId());
