@@ -1,7 +1,7 @@
 package com.smartdms.operation_service.controller;
 
-import com.smartdms.operation_service.dto.Delivery.DeliveryRequest;
-import com.smartdms.operation_service.dto.Delivery.DeliveryResponse;
+import com.smartdms.operation_service.dto.delivery.DeliveryRequest;
+import com.smartdms.operation_service.dto.delivery.DeliveryResponse;
 import com.smartdms.operation_service.service.DeliveryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;

@@ -1,19 +1,19 @@
 package com.smartdms.operation_service.service;
 
 import com.smartdms.operation_service.dto.supplier.SupplierRequest;
-import com.smartdms.operation_service.entity.Supplier;
+import com.smartdms.operation_service.dto.supplier.SupplierResponse;
 
 import java.util.List;
 
 public interface SupplierService {
 
-    List<Supplier> getAll();
+    List<SupplierResponse> getAll();
 
-    Supplier getById(Long id);
+    SupplierResponse getById(Long id);
 
-    Supplier create(SupplierRequest supplier);
+    SupplierResponse create(SupplierRequest request);
 
-    Supplier update(Long id, SupplierRequest  supplier);
+    SupplierResponse update(Long id, SupplierRequest request);
 
     void delete(Long id);
 }

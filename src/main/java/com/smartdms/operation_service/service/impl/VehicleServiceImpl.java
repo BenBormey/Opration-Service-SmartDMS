@@ -1,7 +1,7 @@
 package com.smartdms.operation_service.service.impl;
 
-import com.smartdms.operation_service.dto.Vehicle.VehicleRequest;
-import com.smartdms.operation_service.dto.Vehicle.VehicleResponse;
+import com.smartdms.operation_service.dto.vehicle.VehicleRequest;
+import com.smartdms.operation_service.dto.vehicle.VehicleResponse;
 import com.smartdms.operation_service.entity.Vehicle;
 import com.smartdms.operation_service.exception.ResourceAlreadyExistsException;
 import com.smartdms.operation_service.exception.ResourceNotFoundException;
@@ -65,6 +65,13 @@ public class VehicleServiceImpl implements VehicleService {
         Vehicle vehicle = vehicleRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Vehicle not found with id: " + id));
+
+        vehicleRepository.findByVehicleNo(request.getVehicleNo())
+                .filter(existing -> !existing.getId().equals(id))
+                .ifPresent(existing -> {
+                    throw new ResourceAlreadyExistsException(
+                            "Vehicle already exists with number: " + request.getVehicleNo());
+                });
 
         vehicle.setVehicleNo(request.getVehicleNo());
         vehicle.setVehicleType(request.getVehicleType());

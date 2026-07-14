@@ -1,13 +1,14 @@
 package com.smartdms.operation_service.service.impl;
 
-import com.smartdms.operation_service.dto.RoutePlan.RoutePlanDetailRequest;
-import com.smartdms.operation_service.dto.RoutePlan.RoutePlanDetailResponse;
-import com.smartdms.operation_service.dto.RoutePlan.RoutePlanRequest;
-import com.smartdms.operation_service.dto.RoutePlan.RoutePlanResponse;
+import com.smartdms.operation_service.dto.routeplan.RoutePlanDetailRequest;
+import com.smartdms.operation_service.dto.routeplan.RoutePlanDetailResponse;
+import com.smartdms.operation_service.dto.routeplan.RoutePlanRequest;
+import com.smartdms.operation_service.dto.routeplan.RoutePlanResponse;
 import com.smartdms.operation_service.entity.Customer;
 import com.smartdms.operation_service.entity.RoutePlan;
 import com.smartdms.operation_service.entity.RoutePlanDetail;
 import com.smartdms.operation_service.entity.User;
+import com.smartdms.operation_service.exception.ResourceAlreadyExistsException;
 import com.smartdms.operation_service.exception.ResourceNotFoundException;
 import com.smartdms.operation_service.repository.CustomerRepository;
 import com.smartdms.operation_service.repository.RoutePlanRepository;
@@ -34,7 +35,7 @@ public class RoutePlanServiceImpl implements RoutePlanService {
 
         // ប្រសិនបើ salesman នេះ មាន route plan រួចហើយ — កុំឱ្យ add ម្ដងទៀត
         if (routePlanRepository.existsBySalesmanId(request.getSalesmanId())) {
-            throw new IllegalStateException(
+            throw new ResourceAlreadyExistsException(
                     "Route Plan already exists for salesman id: " + request.getSalesmanId());
         }
 
@@ -56,6 +57,14 @@ public class RoutePlanServiceImpl implements RoutePlanService {
 
         RoutePlan routePlan = routePlanRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Route Plan not found with id: " + id));
+
+        boolean salesmanTaken = routePlanRepository.findBySalesmanId(request.getSalesmanId())
+                .stream()
+                .anyMatch(existing -> !existing.getId().equals(id));
+        if (salesmanTaken) {
+            throw new ResourceAlreadyExistsException(
+                    "Route Plan already exists for salesman id: " + request.getSalesmanId());
+        }
 
         routePlan.setSalesmanId(request.getSalesmanId());
         routePlan.setDescription(request.getDescription());

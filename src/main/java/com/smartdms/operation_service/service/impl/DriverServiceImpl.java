@@ -1,8 +1,8 @@
 package com.smartdms.operation_service.service.impl;
 
-import com.smartdms.operation_service.dto.Driver.DriverStopResponse;
-import com.smartdms.operation_service.dto.Driver.DriverSummaryResponse;
-import com.smartdms.operation_service.dto.Driver.DriverVehicleInfoResponse;
+import com.smartdms.operation_service.dto.driver.DriverStopResponse;
+import com.smartdms.operation_service.dto.driver.DriverSummaryResponse;
+import com.smartdms.operation_service.dto.driver.DriverVehicleInfoResponse;
 import com.smartdms.operation_service.entity.*;
 import com.smartdms.operation_service.repository.*;
 import com.smartdms.operation_service.service.DriverService;

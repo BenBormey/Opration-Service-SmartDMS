@@ -1,8 +1,8 @@
 package com.smartdms.operation_service.controller;
 
 
-import com.smartdms.operation_service.dto.Invoice.InvoiceRequest;
-import com.smartdms.operation_service.dto.Invoice.InvoiceResponse;
+import com.smartdms.operation_service.dto.invoice.InvoiceRequest;
+import com.smartdms.operation_service.dto.invoice.InvoiceResponse;
 import com.smartdms.operation_service.service.InvoiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

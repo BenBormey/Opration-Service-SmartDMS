@@ -1,7 +1,7 @@
 package com.smartdms.operation_service.service.impl;
 
-import com.smartdms.operation_service.dto.Invoice.InvoiceRequest;
-import com.smartdms.operation_service.dto.Invoice.InvoiceResponse;
+import com.smartdms.operation_service.dto.invoice.InvoiceRequest;
+import com.smartdms.operation_service.dto.invoice.InvoiceResponse;
 import com.smartdms.operation_service.entity.Customer;
 import com.smartdms.operation_service.entity.Invoice;
 import com.smartdms.operation_service.exception.ResourceAlreadyExistsException;
@@ -63,6 +63,15 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         Invoice invoice = invoiceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Invoice not found with id: " + id));
+
+        if (request.getSalesOrderId() != null) {
+            invoiceRepository.findBySalesOrderId(request.getSalesOrderId())
+                    .filter(existing -> !existing.getId().equals(id))
+                    .ifPresent(existing -> {
+                        throw new ResourceAlreadyExistsException(
+                                "Invoice already exists for sales order id: " + request.getSalesOrderId());
+                    });
+        }
 
         invoice.setSalesOrderId(request.getSalesOrderId());
         invoice.setCustomerId(request.getCustomerId());

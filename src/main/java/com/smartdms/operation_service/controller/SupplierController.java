@@ -1,7 +1,7 @@
 package com.smartdms.operation_service.controller;
 
 import com.smartdms.operation_service.dto.supplier.SupplierRequest;
-import com.smartdms.operation_service.entity.Supplier;
+import com.smartdms.operation_service.dto.supplier.SupplierResponse;
 import com.smartdms.operation_service.service.SupplierService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -16,26 +16,26 @@ public class SupplierController {
     private final SupplierService supplierService;
 
     @GetMapping
-    public List<Supplier> getAll() {
+    public List<SupplierResponse> getAll() {
         return supplierService.getAll();
     }
 
     @GetMapping("/{id}")
-    public Supplier getById(@PathVariable Long id) {
+    public SupplierResponse getById(@PathVariable Long id) {
         return supplierService.getById(id);
     }
 
     @PostMapping
-    public Supplier create(@RequestBody SupplierRequest supplier) {
-        return supplierService.create(supplier);
+    public SupplierResponse create(@RequestBody SupplierRequest request) {
+        return supplierService.create(request);
     }
 
     @PutMapping("/{id}")
-    public Supplier update(
+    public SupplierResponse update(
             @PathVariable Long id,
-            @RequestBody SupplierRequest supplier) {
+            @RequestBody SupplierRequest request) {
 
-        return supplierService.update(id, supplier);
+        return supplierService.update(id, request);
     }
 
     @DeleteMapping("/{id}")

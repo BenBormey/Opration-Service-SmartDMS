@@ -1,7 +1,7 @@
 package com.smartdms.operation_service.service.impl;
 
-import com.smartdms.operation_service.dto.DriverAssignment.DriverAssignmentRequest;
-import com.smartdms.operation_service.dto.DriverAssignment.DriverAssignmentResponse;
+import com.smartdms.operation_service.dto.driverassignment.DriverAssignmentRequest;
+import com.smartdms.operation_service.dto.driverassignment.DriverAssignmentResponse;
 import com.smartdms.operation_service.entity.DriverAssignment;
 import com.smartdms.operation_service.entity.RoutePlan;
 import com.smartdms.operation_service.entity.User;

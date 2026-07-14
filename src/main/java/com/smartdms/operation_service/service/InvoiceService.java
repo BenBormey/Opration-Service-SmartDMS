@@ -1,7 +1,7 @@
 package com.smartdms.operation_service.service;
 
-import com.smartdms.operation_service.dto.Invoice.InvoiceRequest;
-import com.smartdms.operation_service.dto.Invoice.InvoiceResponse;
+import com.smartdms.operation_service.dto.invoice.InvoiceRequest;
+import com.smartdms.operation_service.dto.invoice.InvoiceResponse;
 
 import java.util.List;
 

@@ -38,6 +38,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // CORS preflight
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        // Let the error-dispatch forward through, otherwise any exception (e.g. a
+                        // 404 for an unmapped path) gets re-dispatched to /error, which then falls
+                        // through to anyRequest().authenticated() and comes back as an opaque 403.
+                        .requestMatchers("/error").permitAll()
                         // Swagger docs
                         .requestMatchers(
                                 "/swagger-ui/**",

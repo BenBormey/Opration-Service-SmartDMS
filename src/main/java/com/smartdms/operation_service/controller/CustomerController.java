@@ -1,7 +1,7 @@
 package com.smartdms.operation_service.controller;
 
-import com.smartdms.operation_service.dto.Customer.CustomerRequest;
-import com.smartdms.operation_service.dto.Customer.CustomerResponse;
+import com.smartdms.operation_service.dto.customer.CustomerRequest;
+import com.smartdms.operation_service.dto.customer.CustomerResponse;
 import com.smartdms.operation_service.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

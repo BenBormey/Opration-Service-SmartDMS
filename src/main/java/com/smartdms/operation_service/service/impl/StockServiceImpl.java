@@ -5,11 +5,10 @@ import com.smartdms.operation_service.dto.stock.StockRequest;
 import com.smartdms.operation_service.dto.stock.StockResponse;
 import com.smartdms.operation_service.entity.Product;
 import com.smartdms.operation_service.entity.User;
-import com.smartdms.operation_service.entity.sub_distributors;
 import com.smartdms.operation_service.entity.Stock;
+import com.smartdms.operation_service.exception.ResourceAlreadyExistsException;
 import com.smartdms.operation_service.exception.ResourceNotFoundException;
 import com.smartdms.operation_service.repository.ProductRepository;
-import com.smartdms.operation_service.repository.SdRepository;
 import com.smartdms.operation_service.repository.StockRepository;
 import com.smartdms.operation_service.repository.UserRepository;
 import com.smartdms.operation_service.service.StockService;
@@ -21,14 +20,13 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class StockServiceImpl implements StockService {
-    private final SdRepository sdRepository;
     private final ProductRepository productRepository;
     private final StockRepository repository;
-    private  final UserRepository userripository;
+    private final UserRepository userRepository;
     @Override
     public StockResponse create(StockRequest request) {
 
-        User user = userripository.findById(request.getSdId())
+        User user = userRepository.findById(request.getSdId())
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "SD not found with id: " + request.getSdId()));
@@ -37,6 +35,12 @@ public class StockServiceImpl implements StockService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "Product not found with id: " + request.getProductId()));
+
+        if (repository.findBySdIdAndProductId(request.getSdId(), request.getProductId()).isPresent()) {
+            throw new ResourceAlreadyExistsException(
+                    "Stock already exists for sdId=" + request.getSdId()
+                            + " and productId=" + request.getProductId());
+        }
 
         Stock stock = new Stock();
         stock.setSdId(user.getId());
@@ -73,7 +77,7 @@ public class StockServiceImpl implements StockService {
         Stock stock = repository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Stock not found with id: " + id));
-        User user = userripository.findById(request.getSdId())
+        User user = userRepository.findById(request.getSdId())
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "SD not found with id: " + request.getSdId()));
@@ -82,6 +86,14 @@ public class StockServiceImpl implements StockService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "Product not found with id: " + request.getProductId()));
+
+        repository.findBySdIdAndProductId(request.getSdId(), request.getProductId())
+                .filter(existing -> !existing.getId().equals(id))
+                .ifPresent(existing -> {
+                    throw new ResourceAlreadyExistsException(
+                            "Stock already exists for sdId=" + request.getSdId()
+                                    + " and productId=" + request.getProductId());
+                });
 
         stock.setSdId(request.getSdId());
         stock.setProductId(request.getProductId());
@@ -105,7 +117,7 @@ public class StockServiceImpl implements StockService {
     private StockResponse mapToResponse(Stock stock) {
 
 
-        User user  = userripository.findById(stock.getSdId())
+        User user  = userRepository.findById(stock.getSdId())
                 .orElseThrow(() -> new ResourceNotFoundException("SD not found"));
         Product product = productRepository.findById(stock.getProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));

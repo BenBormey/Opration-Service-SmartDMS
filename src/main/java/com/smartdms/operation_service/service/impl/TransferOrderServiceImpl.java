@@ -1,12 +1,18 @@
 package com.smartdms.operation_service.service.impl;
 
+import com.smartdms.operation_service.dto.transferorder.TransferOrderItemRequest;
+import com.smartdms.operation_service.dto.transferorder.TransferOrderItemResponse;
+import com.smartdms.operation_service.dto.transferorder.TransferOrderRequest;
+import com.smartdms.operation_service.dto.transferorder.TransferOrderResponse;
 import com.smartdms.operation_service.entity.*;
 import com.smartdms.operation_service.exception.InvalidStateException;
+import com.smartdms.operation_service.exception.ResourceNotFoundException;
+import com.smartdms.operation_service.repository.ProductRepository;
 import com.smartdms.operation_service.repository.StockLedgerRepository;
 import com.smartdms.operation_service.repository.StockRepository;
 import com.smartdms.operation_service.repository.TransferOrderRepository;
 import com.smartdms.operation_service.repository.WarehouseStockRepository;
-import com.smartdms.operation_service.service.ITransferOrderService;
+import com.smartdms.operation_service.service.TransferOrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +22,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class TransferOrderServiceImpl implements ITransferOrderService {
+public class TransferOrderServiceImpl implements TransferOrderService {
 
     // status constants — avoids typos from raw strings
     private static final String REQUEST   = "REQUEST";
@@ -31,57 +37,71 @@ public class TransferOrderServiceImpl implements ITransferOrderService {
     private final StockLedgerRepository stockLedgerRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     private final StockRepository stockRepository;
+    private final ProductRepository productRepository;
 
     @Override
     @Transactional
-    public TransferOrder save(TransferOrder transferOrder) {
+    public TransferOrderResponse create(TransferOrderRequest request) {
         LocalDateTime now = LocalDateTime.now();
+
+        TransferOrder transferOrder = new TransferOrder();
+        transferOrder.setTransferNo(request.getTransferNo());
+        transferOrder.setFromWarehouseId(request.getFromWarehouseId());
+        transferOrder.setToSdId(request.getToSdId());
+        transferOrder.setDriverId(request.getDriverId());
+        transferOrder.setVehicleId(request.getVehicleId());
+        transferOrder.setTransferDate(request.getTransferDate());
+        transferOrder.setRemark(request.getRemark());
+        transferOrder.setStatus(REQUEST);
         transferOrder.setCreatedAt(now);
         transferOrder.setUpdatedAt(now);
 
-        if (transferOrder.getStatus() == null) {
-            transferOrder.setStatus(REQUEST);
-        }
-
-        if (transferOrder.getTransferOrderItems() != null) {
-            for (TransferOrderItem item : transferOrder.getTransferOrderItems()) {
+        if (request.getItems() != null) {
+            for (TransferOrderItemRequest itemReq : request.getItems()) {
+                TransferOrderItem item = new TransferOrderItem();
+                item.setProductId(itemReq.getProductId());
+                item.setQty(itemReq.getQty());
                 item.setTransferOrder(transferOrder); // wire up the back-reference
+                transferOrder.getTransferOrderItems().add(item);
             }
         }
-        return transferOrderRepository.save(transferOrder);
+
+        TransferOrder saved = transferOrderRepository.save(transferOrder);
+        return mapToResponse(saved);
     }
 
     @Override
     @Transactional
-    public TransferOrder update(Long id, TransferOrder changes) {
-        TransferOrder existing = findById(id);
+    public TransferOrderResponse update(Long id, TransferOrderRequest request) {
+        TransferOrder existing = getEntityById(id);
 
         // copy only the editable header fields; preserve createdAt, status, items
-        existing.setTransferNo(changes.getTransferNo());
-        existing.setFromWarehouseId(changes.getFromWarehouseId());
-        existing.setToSdId(changes.getToSdId());
-        existing.setTransferDate(changes.getTransferDate());
+        existing.setTransferNo(request.getTransferNo());
+        existing.setFromWarehouseId(request.getFromWarehouseId());
+        existing.setToSdId(request.getToSdId());
+        existing.setTransferDate(request.getTransferDate());
 
-        // 👈 driver fields (only overwrite when provided, so update doesn't wipe them)
-        if (changes.getDriverId() != null)  existing.setDriverId(changes.getDriverId());
-        if (changes.getVehicleId() != null) existing.setVehicleId(changes.getVehicleId());
-        if (changes.getRemark() != null)    existing.setRemark(changes.getRemark());
+        // driver fields (only overwrite when provided, so update doesn't wipe them)
+        if (request.getDriverId() != null)  existing.setDriverId(request.getDriverId());
+        if (request.getVehicleId() != null) existing.setVehicleId(request.getVehicleId());
+        if (request.getRemark() != null)    existing.setRemark(request.getRemark());
 
         existing.setUpdatedAt(LocalDateTime.now());
 
-        return transferOrderRepository.save(existing);
+        return mapToResponse(transferOrderRepository.save(existing));
     }
 
     @Override
-    public List<TransferOrder> findAll() {
-        return transferOrderRepository.findAll();
+    public List<TransferOrderResponse> getAll() {
+        return transferOrderRepository.findAll()
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
     @Override
-    public TransferOrder findById(Long id) {
-        return transferOrderRepository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("Transfer Order not found with id: " + id));
+    public TransferOrderResponse getById(Long id) {
+        return mapToResponse(getEntityById(id));
     }
 
     @Override
@@ -92,51 +112,57 @@ public class TransferOrderServiceImpl implements ITransferOrderService {
 
     @Override
     @Transactional
-    public TransferOrder approve(Long id) {
-        TransferOrder order = findById(id);
+    public TransferOrderResponse approve(Long id) {
+        TransferOrder order = getEntityById(id);
         requireStatus(order, REQUEST);
-        return changeStatus(order, APPROVED);
+        return mapToResponse(changeStatus(order, APPROVED));
     }
 
     @Override
     @Transactional
-    public TransferOrder ship(Long id) {
-        TransferOrder order = findById(id);
+    public TransferOrderResponse ship(Long id) {
+        TransferOrder order = getEntityById(id);
         requireStatus(order, APPROVED);           // must be approved before shipping
         // stock leaves the source warehouse
         for (TransferOrderItem item : order.getTransferOrderItems()) {
             recordOutbound(order, item);
         }
-        order.setStartedAt(LocalDateTime.now());  // 👈 driver started moving stock
-        return changeStatus(order, SHIPPED);
+        order.setStartedAt(LocalDateTime.now());  // driver started moving stock
+        return mapToResponse(changeStatus(order, SHIPPED));
     }
 
     @Override
     @Transactional
-    public TransferOrder receive(Long id) {
-        TransferOrder order = findById(id);
+    public TransferOrderResponse receive(Long id) {
+        TransferOrder order = getEntityById(id);
         requireStatus(order, SHIPPED);            // must be shipped before receiving
         // stock arrives at the destination SD
         for (TransferOrderItem item : order.getTransferOrderItems()) {
             recordInbound(order, item);
         }
-        order.setCompletedAt(LocalDateTime.now()); // 👈 driver finished
-        return changeStatus(order, RECEIVED);
+        order.setCompletedAt(LocalDateTime.now()); // driver finished
+        return mapToResponse(changeStatus(order, RECEIVED));
     }
 
     @Override
     @Transactional
-    public TransferOrder cancel(Long id) {
-        TransferOrder order = findById(id);
+    public TransferOrderResponse cancel(Long id) {
+        TransferOrder order = getEntityById(id);
         // only cancel before goods have moved
         if (!REQUEST.equals(order.getStatus()) && !APPROVED.equals(order.getStatus())) {
-            throw new RuntimeException(
+            throw new InvalidStateException(
                     "Cannot cancel an order in status " + order.getStatus());
         }
-        return changeStatus(order, CANCELLED);
+        return mapToResponse(changeStatus(order, CANCELLED));
     }
 
     // ---- helpers ----
+
+    private TransferOrder getEntityById(Long id) {
+        return transferOrderRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Transfer Order not found with id: " + id));
+    }
 
     private TransferOrder changeStatus(TransferOrder order, String status) {
         order.setStatus(status);
@@ -224,5 +250,49 @@ public class TransferOrderServiceImpl implements ITransferOrderService {
 
     private int toQty(Double qty) {
         return qty == null ? 0 : qty.intValue();
+    }
+
+    private TransferOrderResponse mapToResponse(TransferOrder order) {
+        List<TransferOrderItemResponse> items = order.getTransferOrderItems()
+                .stream()
+                .map(this::mapItemToResponse)
+                .toList();
+
+        return TransferOrderResponse.builder()
+                .id(order.getId())
+                .transferNo(order.getTransferNo())
+                .fromWarehouseId(order.getFromWarehouseId())
+                .toSdId(order.getToSdId())
+                .driverId(order.getDriverId())
+                .vehicleId(order.getVehicleId())
+                .transferDate(order.getTransferDate())
+                .status(order.getStatus())
+                .startedAt(order.getStartedAt())
+                .completedAt(order.getCompletedAt())
+                .remark(order.getRemark())
+                .createdAt(order.getCreatedAt())
+                .updatedAt(order.getUpdatedAt())
+                .items(items)
+                .build();
+    }
+
+    private TransferOrderItemResponse mapItemToResponse(TransferOrderItem item) {
+        String productName = null;
+        String barcode = null;
+        if (item.getProductId() != null) {
+            Product product = productRepository.findById(item.getProductId()).orElse(null);
+            if (product != null) {
+                productName = product.getProductName();
+                barcode = product.getBarcode();
+            }
+        }
+
+        return TransferOrderItemResponse.builder()
+                .id(item.getId())
+                .productId(item.getProductId())
+                .productName(productName)
+                .barcode(barcode)
+                .qty(item.getQty())
+                .build();
     }
 }

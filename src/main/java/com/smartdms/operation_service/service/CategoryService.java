@@ -1,7 +1,7 @@
 package com.smartdms.operation_service.service;
 
-import com.smartdms.operation_service.dto.Category.CategoryResponse;
-import com.smartdms.operation_service.dto.Category.CategoryRequest;
+import com.smartdms.operation_service.dto.category.CategoryResponse;
+import com.smartdms.operation_service.dto.category.CategoryRequest;
 
 
 import java.util.List;

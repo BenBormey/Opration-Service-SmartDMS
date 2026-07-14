@@ -5,6 +5,7 @@ import com.smartdms.operation_service.dto.stock.WarehouseStockResponse;
 import com.smartdms.operation_service.entity.Product;
 import com.smartdms.operation_service.entity.Warehouse;
 import com.smartdms.operation_service.entity.WarehouseStock;
+import com.smartdms.operation_service.exception.ResourceAlreadyExistsException;
 import com.smartdms.operation_service.exception.ResourceNotFoundException;
 import com.smartdms.operation_service.repository.ProductRepository;
 import com.smartdms.operation_service.repository.WarehouseRepository;
@@ -65,6 +66,12 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
                         new ResourceNotFoundException(
                                 "Product not found with Id : " + request.getProductId()));
 
+        if (repository.findByWarehouse_IdAndProduct_Id(request.getWarehouseId(), request.getProductId()).isPresent()) {
+            throw new ResourceAlreadyExistsException(
+                    "Warehouse stock already exists for warehouseId=" + request.getWarehouseId()
+                            + " and productId=" + request.getProductId());
+        }
+
         WarehouseStock ws = WarehouseStock.builder()
                 .warehouse(warehouse)
                 .product(product)
@@ -95,6 +102,14 @@ public class WarehouseStockServiceImpl implements WarehouseStockService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "Product not found with Id : " + request.getProductId()));
+
+        repository.findByWarehouse_IdAndProduct_Id(request.getWarehouseId(), request.getProductId())
+                .filter(existing -> !existing.getId().equals(id))
+                .ifPresent(existing -> {
+                    throw new ResourceAlreadyExistsException(
+                            "Warehouse stock already exists for warehouseId=" + request.getWarehouseId()
+                                    + " and productId=" + request.getProductId());
+                });
 
         ws.setWarehouse(warehouse);
         ws.setProduct(product);

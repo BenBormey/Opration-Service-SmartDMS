@@ -1,7 +1,7 @@
 package com.smartdms.operation_service.service;
 
-import com.smartdms.operation_service.dto.Vehicle.VehicleRequest;
-import com.smartdms.operation_service.dto.Vehicle.VehicleResponse;
+import com.smartdms.operation_service.dto.vehicle.VehicleRequest;
+import com.smartdms.operation_service.dto.vehicle.VehicleResponse;
 
 import java.util.List;
 

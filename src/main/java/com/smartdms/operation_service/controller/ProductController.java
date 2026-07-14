@@ -1,7 +1,7 @@
 package com.smartdms.operation_service.controller;
 
-import com.smartdms.operation_service.dto.Product.ProductRequest;
-import com.smartdms.operation_service.dto.Product.ProductResponse;
+import com.smartdms.operation_service.dto.product.ProductRequest;
+import com.smartdms.operation_service.dto.product.ProductResponse;
 import com.smartdms.operation_service.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

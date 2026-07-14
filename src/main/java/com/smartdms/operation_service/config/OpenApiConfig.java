@@ -14,12 +14,12 @@ public class OpenApiConfig {
     private static final String SCHEME_NAME = "bearerAuth";
 
     @Bean
-    public OpenAPI authServiceOpenAPI() {
+    public OpenAPI operationServiceOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Auth Service API")
+                        .title("Operation Service API")
                         .version("v1")
-                        .description("Registration, login, and JWT-protected endpoints."))
+                        .description("SmartDMS operation service: products, orders, deliveries, transfers, and stock. JWT-protected endpoints (token issued by auth-service)."))
                 // Adds the global "Authorize" button (paste the JWT once, it's sent on every call)
                 .addSecurityItem(new SecurityRequirement().addList(SCHEME_NAME))
                 .components(new Components().addSecuritySchemes(SCHEME_NAME,

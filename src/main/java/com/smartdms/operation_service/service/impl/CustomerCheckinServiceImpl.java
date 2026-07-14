@@ -1,7 +1,7 @@
 package com.smartdms.operation_service.service.impl;
 
-import com.smartdms.operation_service.dto.CustomerCheckin.CustomerCheckinRequest;
-import com.smartdms.operation_service.dto.CustomerCheckin.CustomerCheckinResponse;
+import com.smartdms.operation_service.dto.customercheckin.CustomerCheckinRequest;
+import com.smartdms.operation_service.dto.customercheckin.CustomerCheckinResponse;
 import com.smartdms.operation_service.entity.Customer;
 import com.smartdms.operation_service.entity.CustomerCheckin;
 import com.smartdms.operation_service.entity.User;

@@ -1,7 +1,7 @@
 package com.smartdms.operation_service.service.impl;
 
-import com.smartdms.operation_service.dto.Collection.CollectionRequest;
-import com.smartdms.operation_service.dto.Collection.CollectionResponse;
+import com.smartdms.operation_service.dto.collection.CollectionRequest;
+import com.smartdms.operation_service.dto.collection.CollectionResponse;
 import com.smartdms.operation_service.entity.Collection;
 import com.smartdms.operation_service.entity.Customer;
 import com.smartdms.operation_service.entity.Invoice;

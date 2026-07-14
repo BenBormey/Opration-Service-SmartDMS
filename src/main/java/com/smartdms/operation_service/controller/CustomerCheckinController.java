@@ -1,7 +1,7 @@
 package com.smartdms.operation_service.controller;
 
-import com.smartdms.operation_service.dto.CustomerCheckin.CustomerCheckinRequest;
-import com.smartdms.operation_service.dto.CustomerCheckin.CustomerCheckinResponse;
+import com.smartdms.operation_service.dto.customercheckin.CustomerCheckinRequest;
+import com.smartdms.operation_service.dto.customercheckin.CustomerCheckinResponse;
 import com.smartdms.operation_service.service.CustomerCheckinService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,7 +1,7 @@
 package com.smartdms.operation_service.service;
 
-import com.smartdms.operation_service.dto.Delivery.DeliveryRequest;
-import com.smartdms.operation_service.dto.Delivery.DeliveryResponse;
+import com.smartdms.operation_service.dto.delivery.DeliveryRequest;
+import com.smartdms.operation_service.dto.delivery.DeliveryResponse;
 
 import java.time.LocalDate;
 import java.util.List;

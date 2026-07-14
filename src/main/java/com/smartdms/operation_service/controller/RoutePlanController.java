@@ -1,7 +1,7 @@
 package com.smartdms.operation_service.controller;
 
-import com.smartdms.operation_service.dto.RoutePlan.RoutePlanRequest;
-import com.smartdms.operation_service.dto.RoutePlan.RoutePlanResponse;
+import com.smartdms.operation_service.dto.routeplan.RoutePlanRequest;
+import com.smartdms.operation_service.dto.routeplan.RoutePlanResponse;
 import com.smartdms.operation_service.service.RoutePlanService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

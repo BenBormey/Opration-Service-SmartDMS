@@ -1,7 +1,7 @@
 package com.smartdms.operation_service.service;
 
-import com.smartdms.operation_service.dto.RoutePlan.RoutePlanRequest;
-import com.smartdms.operation_service.dto.RoutePlan.RoutePlanResponse;
+import com.smartdms.operation_service.dto.routeplan.RoutePlanRequest;
+import com.smartdms.operation_service.dto.routeplan.RoutePlanResponse;
 
 import java.util.List;
 

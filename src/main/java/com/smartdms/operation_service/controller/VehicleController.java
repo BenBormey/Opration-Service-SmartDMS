@@ -1,7 +1,7 @@
 package com.smartdms.operation_service.controller;
 
-import com.smartdms.operation_service.dto.Vehicle.VehicleRequest;
-import com.smartdms.operation_service.dto.Vehicle.VehicleResponse;
+import com.smartdms.operation_service.dto.vehicle.VehicleRequest;
+import com.smartdms.operation_service.dto.vehicle.VehicleResponse;
 import com.smartdms.operation_service.service.VehicleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -1,7 +1,7 @@
 package com.smartdms.operation_service.service;
 
-import com.smartdms.operation_service.dto.CustomerCheckin.CustomerCheckinRequest;
-import com.smartdms.operation_service.dto.CustomerCheckin.CustomerCheckinResponse;
+import com.smartdms.operation_service.dto.customercheckin.CustomerCheckinRequest;
+import com.smartdms.operation_service.dto.customercheckin.CustomerCheckinResponse;
 
 import java.util.List;
 

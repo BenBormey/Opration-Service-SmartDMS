@@ -1,9 +1,9 @@
 package com.smartdms.operation_service.controller;
 
-import com.smartdms.operation_service.entity.TransferOrder;
-import com.smartdms.operation_service.service.ITransferOrderService;
+import com.smartdms.operation_service.dto.transferorder.TransferOrderRequest;
+import com.smartdms.operation_service.dto.transferorder.TransferOrderResponse;
+import com.smartdms.operation_service.service.TransferOrderService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,12 +15,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TransferOrderController {
 
-    private final ITransferOrderService transferOrderService;
+    private final TransferOrderService transferOrderService;
 
-    // Create Transfer Order (REQUEST)
     @PostMapping
-    public ResponseEntity<TransferOrder> create(@RequestBody TransferOrder transferOrder) {
-        TransferOrder saved = transferOrderService.save(transferOrder);
+    public ResponseEntity<TransferOrderResponse> create(@RequestBody TransferOrderRequest request) {
+        TransferOrderResponse saved = transferOrderService.create(request);
         // 201 Created with a Location header is more correct than 200 for a create
         return ResponseEntity
                 .created(URI.create("/api/transfer-orders/" + saved.getId()))
@@ -28,40 +27,39 @@ public class TransferOrderController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TransferOrder>> getAll() {
-        return ResponseEntity.ok(transferOrderService.findAll());
+    public ResponseEntity<List<TransferOrderResponse>> getAll() {
+        return ResponseEntity.ok(transferOrderService.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TransferOrder> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(transferOrderService.findById(id));
+    public ResponseEntity<TransferOrderResponse> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(transferOrderService.getById(id));
     }
 
-    // Update — uses the dedicated update method, not save
     @PutMapping("/{id}")
-    public ResponseEntity<TransferOrder> update(
+    public ResponseEntity<TransferOrderResponse> update(
             @PathVariable Long id,
-            @RequestBody TransferOrder transferOrder) {
-        return ResponseEntity.ok(transferOrderService.update(id, transferOrder));
+            @RequestBody TransferOrderRequest request) {
+        return ResponseEntity.ok(transferOrderService.update(id, request));
     }
 
     @PutMapping("/{id}/approve")
-    public ResponseEntity<TransferOrder> approve(@PathVariable Long id) {
+    public ResponseEntity<TransferOrderResponse> approve(@PathVariable Long id) {
         return ResponseEntity.ok(transferOrderService.approve(id));
     }
 
     @PutMapping("/{id}/ship")
-    public ResponseEntity<TransferOrder> ship(@PathVariable Long id) {
+    public ResponseEntity<TransferOrderResponse> ship(@PathVariable Long id) {
         return ResponseEntity.ok(transferOrderService.ship(id));
     }
 
     @PutMapping("/{id}/receive")
-    public ResponseEntity<TransferOrder> receive(@PathVariable Long id) {
+    public ResponseEntity<TransferOrderResponse> receive(@PathVariable Long id) {
         return ResponseEntity.ok(transferOrderService.receive(id));
     }
 
     @PutMapping("/{id}/cancel")
-    public ResponseEntity<TransferOrder> cancel(@PathVariable Long id) {
+    public ResponseEntity<TransferOrderResponse> cancel(@PathVariable Long id) {
         return ResponseEntity.ok(transferOrderService.cancel(id));
     }
 

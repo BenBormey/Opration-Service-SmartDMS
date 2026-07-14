@@ -1,7 +1,7 @@
 package com.smartdms.operation_service.service.impl;
 
-import com.smartdms.operation_service.dto.Customer.CustomerRequest;
-import com.smartdms.operation_service.dto.Customer.CustomerResponse;
+import com.smartdms.operation_service.dto.customer.CustomerRequest;
+import com.smartdms.operation_service.dto.customer.CustomerResponse;
 import com.smartdms.operation_service.entity.Customer;
 import com.smartdms.operation_service.exception.ResourceNotFoundException;
 import com.smartdms.operation_service.repository.CustomerRepository;
